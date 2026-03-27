@@ -11,6 +11,15 @@ This repository is currently in its initial setup stage. Use this space to defin
 - automation and CI/CD pipelines
 - environment configuration and operational documentation
 
+## GitHub Actions
+
+This repository includes starter GitHub Actions workflows in `.github/workflows/`:
+
+- `ci.yml`: runs on pushes, pull requests, and manual trigger
+- `deploy.yml`: manual deployment placeholder workflow
+
+You can expand these workflows later to add linting, tests, Docker builds, Terraform validation, or deployments.
+
 ## Getting Started
 
 1. Clone the repository.

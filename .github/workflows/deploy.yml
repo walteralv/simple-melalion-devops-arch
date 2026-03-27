@@ -1,0 +1,19 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Placeholder Deploy Job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deployment placeholder
+        run: |
+          echo "Add your deployment commands here."
+          echo "Examples: Docker build, Terraform apply, kubectl apply, etc."
+
