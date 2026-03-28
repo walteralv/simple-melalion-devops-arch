@@ -77,6 +77,8 @@ jobs:
             TF_VAR_storage_account_silver_name
             TF_VAR_storage_account_gold_name
             TF_VAR_databricks_workspace_name
+            TF_VAR_databricks_sku
+            TF_VAR_databricks_secret_scope_name
           )
 
           for required_secret in "${required_secrets[@]}"; do
