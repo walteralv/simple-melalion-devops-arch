@@ -69,14 +69,14 @@ jobs:
           )
 
           required_vars=(
-            TF_VAR_project_name
-            TF_VAR_environment
-            TF_VAR_location
-            TF_VAR_resource_group_name
-            TF_VAR_storage_account_bronze_name
-            TF_VAR_storage_account_silver_name
-            TF_VAR_storage_account_gold_name
-            TF_VAR_databricks_workspace_name
+            TF_VAR_PROJECT_NAME
+            TF_VAR_ENVIRONMENT
+            TF_VAR_LOCATION
+            TF_VAR_RESOURCE_GROUP_NAME
+            TF_VAR_STORAGE_ACCOUNT_BRONZE_NAME
+            TF_VAR_STORAGE_ACCOUNT_SILVER_NAME
+            TF_VAR_STORAGE_ACCOUNT_GOLD_NAME
+            TF_VAR_DATABRICKS_WORKSPACE_NAME
           )
 
           for required_secret in "${required_secrets[@]}"; do
