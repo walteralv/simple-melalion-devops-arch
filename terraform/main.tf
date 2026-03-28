@@ -1,4 +1,8 @@
 locals {
+  databricks_catalog_name      = "dtlk_catalog_${var.environment}"
+  databricks_schema_names      = toset(["bronze", "silver", "gold"])
+  databricks_sql_endpoint_name = "${upper(var.environment)}_CLU"
+
   tags = merge(
     {
       project     = var.project_name
@@ -15,28 +19,8 @@ resource "azurerm_resource_group" "this" {
   tags     = local.tags
 }
 
-resource "azurerm_storage_account" "bronze" {
-  name                     = var.storage_account_bronze_name
-  resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  min_tls_version          = "TLS1_2"
-  tags                     = local.tags
-}
-
-resource "azurerm_storage_account" "silver" {
-  name                     = var.storage_account_silver_name
-  resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  min_tls_version          = "TLS1_2"
-  tags                     = local.tags
-}
-
-resource "azurerm_storage_account" "gold" {
-  name                     = var.storage_account_gold_name
+resource "azurerm_storage_account" "this" {
+  name                     = var.storage_account_name
   resource_group_name      = azurerm_resource_group.this.name
   location                 = azurerm_resource_group.this.location
   account_tier             = "Standard"
@@ -59,4 +43,24 @@ resource "azurerm_databricks_workspace" "this" {
 
 resource "databricks_secret_scope" "platform" {
   name = var.databricks_secret_scope_name
+}
+
+resource "databricks_catalog" "this" {
+  name    = local.databricks_catalog_name
+  comment = "Data lakehouse catalog for the ${var.environment} environment."
+}
+
+resource "databricks_schema" "layers" {
+  for_each     = local.databricks_schema_names
+  catalog_name = databricks_catalog.this.name
+  name         = each.value
+  comment      = "${title(each.value)} layer schema for the ${var.environment} environment."
+}
+
+resource "databricks_sql_endpoint" "dev_clu" {
+  name             = local.databricks_sql_endpoint_name
+  cluster_size     = "2X-Small"
+  min_num_clusters = 1
+  max_num_clusters = 1
+  auto_stop_mins   = 15
 }

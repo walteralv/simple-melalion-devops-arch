@@ -24,18 +24,8 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "storage_account_bronze_name" {
-  description = "Globally unique bronze storage account name."
-  type        = string
-}
-
-variable "storage_account_silver_name" {
-  description = "Globally unique silver storage account name."
-  type        = string
-}
-
-variable "storage_account_gold_name" {
-  description = "Globally unique gold storage account name."
+variable "storage_account_name" {
+  description = "Globally unique storage account name."
   type        = string
 }
 
