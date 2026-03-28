@@ -1,0 +1,16 @@
+subscription_id              = "2ba70baf-7ff8-4e44-8076-1d11be1fc143"
+project_name                 = "simple-melalion"
+environment                  = "dev"
+location                     = "eastus"
+resource_group_name          = "rg-simple-melalion-dev"
+storage_account_bronze_name  = "stsimplebronzedev01"
+storage_account_silver_name  = "stsimplemelalionsdv01"
+storage_account_gold_name    = "stsimplemelaliongdv01"
+databricks_workspace_name    = "dbw-simple-melalion-dev"
+databricks_sku               = "premium"
+databricks_secret_scope_name = "platform-secrets"
+
+tags = {
+  owner       = "data-platform"
+  cost_center = "engineering"
+}
