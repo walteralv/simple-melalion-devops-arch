@@ -14,11 +14,20 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Show repository structure
         run: ls -la
 
       - name: Verify README exists
         run: test -f README.md
+
+      - name: Verify Terraform folder exists
+        run: test -d terraform
+
+      - name: Validate Terraform configuration
+        run: |
+          cd terraform
+          terraform init -backend=false
+          terraform validate 
 
