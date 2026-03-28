@@ -1,6 +1,8 @@
 terraform {
   required_version = ">= 1.5.0"
 
+  backend "azurerm" {}
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -22,4 +24,3 @@ provider "azurerm" {
 provider "databricks" {
   host = azurerm_databricks_workspace.this.workspace_url
 }
-

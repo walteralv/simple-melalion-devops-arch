@@ -7,6 +7,15 @@ on:
         description: GitHub environment to use for deployment
         required: true
         default: dev
+      operation:
+        description: Terraform operation to run
+        required: true
+        default: apply
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
       terraform_directory:
         description: Terraform working directory
         required: true
@@ -21,7 +30,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Terraform Deploy
+    name: Terraform ${{ inputs.operation }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
 
@@ -41,6 +50,10 @@ jobs:
       TF_VAR_databricks_workspace_name: ${{ vars.TF_VAR_DATABRICKS_WORKSPACE_NAME }}
       TF_VAR_databricks_sku: ${{ vars.TF_VAR_DATABRICKS_SKU }}
       TF_VAR_databricks_secret_scope_name: ${{ vars.TF_VAR_DATABRICKS_SECRET_SCOPE_NAME }}
+      TF_STATE_RESOURCE_GROUP: ${{ vars.TF_STATE_RESOURCE_GROUP }}
+      TF_STATE_STORAGE_ACCOUNT: ${{ vars.TF_STATE_STORAGE_ACCOUNT }}
+      TF_STATE_CONTAINER: ${{ vars.TF_STATE_CONTAINER }}
+      TF_STATE_KEY: ${{ vars.TF_STATE_KEY }}
 
     steps:
       - name: Checkout repository
@@ -75,6 +88,10 @@ jobs:
             TF_VAR_databricks_workspace_name
             TF_VAR_databricks_sku
             TF_VAR_databricks_secret_scope_name
+            TF_STATE_RESOURCE_GROUP
+            TF_STATE_STORAGE_ACCOUNT
+            TF_STATE_CONTAINER
+            TF_STATE_KEY
           )
 
           for required_secret in "${required_secrets[@]}"; do
@@ -97,16 +114,33 @@ jobs:
 
       - name: Terraform Init
         working-directory: ${{ inputs.terraform_directory }}
-        run: terraform init -input=false
+        run: |
+          terraform init -input=false \
+            -backend-config="resource_group_name=${TF_STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TF_STATE_STORAGE_ACCOUNT}" \
+            -backend-config="container_name=${TF_STATE_CONTAINER}" \
+            -backend-config="key=${TF_STATE_KEY}"
 
       - name: Terraform Validate
         working-directory: ${{ inputs.terraform_directory }}
         run: terraform validate -no-color
 
       - name: Terraform Plan
+        if: ${{ inputs.operation == 'plan' || inputs.operation == 'apply' }}
         working-directory: ${{ inputs.terraform_directory }}
         run: terraform plan -input=false -no-color -out=tfplan
 
       - name: Terraform Apply
+        if: ${{ inputs.operation == 'apply' }}
         working-directory: ${{ inputs.terraform_directory }}
         run: terraform apply -auto-approve tfplan
+
+      - name: Terraform Destroy Plan
+        if: ${{ inputs.operation == 'destroy' }}
+        working-directory: ${{ inputs.terraform_directory }}
+        run: terraform plan -destroy -input=false -no-color -out=tfdestroy
+
+      - name: Terraform Destroy
+        if: ${{ inputs.operation == 'destroy' }}
+        working-directory: ${{ inputs.terraform_directory }}
+        run: terraform apply -auto-approve tfdestroy
