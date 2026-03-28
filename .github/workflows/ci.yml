@@ -16,6 +16,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+
       - name: Show repository structure
         run: ls -la
 
@@ -30,4 +33,3 @@ jobs:
           cd terraform
           terraform init -backend=false
           terraform validate 
-
